@@ -41,6 +41,20 @@ class _MyHomePageState extends State<MyHomePage> {
   List<Arret> arrets = [];
   LatLng centre = const LatLng(47.206221724344566, -1.5393669020595195);
 
+  double interpolation(double x, double a, double b) {
+    return x * (b - a) + a;
+  }
+
+  Color interpolationRougeBleu(double x) {
+    Color a = const Color.fromARGB(255, 255, 0, 0);
+    Color b = const Color.fromARGB(255, 0, 0, 255);
+    return Color.fromARGB(
+        255,
+        interpolation(x, a.red.toDouble(), b.red.toDouble()).toInt(),
+        interpolation(x, a.green.toDouble(), b.green.toDouble()).toInt(),
+        interpolation(x, a.blue.toDouble(), b.blue.toDouble()).toInt());
+  }
+
   Future<void> initStateAsync() async {
     circuits = await Circuit.toutLesCircuits();
     arrets = await Arret.toutLesArrets();
@@ -77,22 +91,13 @@ class _MyHomePageState extends State<MyHomePage> {
             borderColor: Color.fromARGB(c.red, c.green, c.blue, c.alpha),
             strokeWidth: 5.0);
       })),
-      // MarkerLayer(
-      //   markers: List.generate(
-      //       arrets.length,
-      //       (index) => Marker(
-      //           point: arrets[index].point,
-      //           child: Tooltip(
-      //               child: Tooltip(
-      //               child: Icon(Icons.info, color: Colors.blue)))),
-      // )
       MarkerClusterLayerWidget(
         options: MarkerClusterLayerOptions(
           maxClusterRadius: 160,
           size: const Size(80, 80),
           alignment: Alignment.center,
           padding: const EdgeInsets.all(50),
-          maxZoom: 13  ,
+          maxZoom: 13,
           markers: List.generate(
             arrets.length,
             (index) => Marker(
@@ -108,7 +113,9 @@ class _MyHomePageState extends State<MyHomePage> {
               child: Center(
                 child: Text(
                   markers.length.toString(),
-                  style: const TextStyle(color: Colors.white),
+                  style: TextStyle(
+                      color: interpolationRougeBleu(
+                          (markers.length.toDouble()) / 100.0)),
                 ),
               ),
             );
